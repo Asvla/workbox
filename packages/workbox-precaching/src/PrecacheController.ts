@@ -38,6 +38,12 @@ interface PrecacheControllerOptions {
   fallbackToNetwork?: boolean;
 }
 
+function splitIntoBatches<T>(a: T[], n: number): T[][] {
+  return [...Array(Math.ceil(a.length / n))].map((_, i) =>
+    a.slice(n * i, n + n * i),
+  );
+}
+
 /**
  * Performs efficient precaching of assets.
  *
@@ -203,25 +209,30 @@ class PrecacheController {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
 
-      // Cache entries one at a time.
-      // See https://github.com/GoogleChrome/workbox/issues/2528
-      for (const [url, cacheKey] of this._urlsToCacheKeys) {
-        const integrity = this._cacheKeysToIntegrities.get(cacheKey);
-        const cacheMode = this._urlsToCacheModes.get(url);
+      const batches = splitIntoBatches(
+        Object.entries(this._urlsToCacheKeys),
+        10,
+      );
 
-        const request = new Request(url, {
-          integrity,
-          cache: cacheMode,
-          credentials: 'same-origin',
-        });
+      for (const batch of batches) {
+        const promises = batch.flatMap(([url, cacheKey]) => {
+          const integrity = this._cacheKeysToIntegrities.get(cacheKey);
+          const cacheMode = this._urlsToCacheModes.get(url);
 
-        await Promise.all(
-          this.strategy.handleAll({
+          const request = new Request(url, {
+            integrity,
+            cache: cacheMode,
+            credentials: 'same-origin',
+          });
+
+          return this.strategy.handleAll({
             params: {cacheKey},
             request,
             event,
-          }),
-        );
+          });
+        });
+
+        await Promise.all(promises);
       }
 
       const {updatedURLs, notUpdatedURLs} = installReportPlugin;
