@@ -69,6 +69,34 @@
         "string"
       ]
     },
+    "highPriorityAssets": {
+      "description": "One or more specifiers for assets to be precached before all others.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/RegExp"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "lowPriorityAssets": {
+      "description": "One or more specifiers for assets to be precached after all others.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/RegExp"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
     "babelPresetEnvTargets": {
       "description": "The [targets](https://babeljs.io/docs/en/babel-preset-env#targets) to pass\nto `babel-preset-env` when transpiling the service worker bundle.",
       "default": [

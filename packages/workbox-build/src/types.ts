@@ -479,6 +479,14 @@ export interface WebpackPartial {
    * will be used.
    */
   mode?: string | null;
+  /**
+   * One or more specifiers for assets to be precached before all others.
+   */
+  highPriorityAssets?: Array<string | RegExp>;
+  /**
+   * One or more specifiers for assets to be precached after all others.
+   */
+  lowPriorityAssets?: Array<string | RegExp>;
 }
 
 export interface RequiredSWDestPartial {

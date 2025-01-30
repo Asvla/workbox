@@ -68,6 +68,34 @@
         "string"
       ]
     },
+    "highPriorityAssets": {
+      "description": "One or more specifiers for assets to be precached before all others.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/RegExp"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "lowPriorityAssets": {
+      "description": "One or more specifiers for assets to be precached after all others.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/RegExp"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
     "injectionPoint": {
       "description": "The string to find inside of the `swSrc` file. Once found, it will be\nreplaced by the generated precache manifest.",
       "default": "self.__WB_MANIFEST",
