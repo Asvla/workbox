@@ -39,9 +39,8 @@ interface PrecacheControllerOptions {
 }
 
 function splitIntoBatches<T>(a: T[], n: number): T[][] {
-  return [...Array(Math.ceil(a.length / n))].map((_, i) =>
-    a.slice(n * i, n + n * i),
-  );
+  const indexArray: number[] = Array(Math.ceil(a.length / n));
+  return [...indexArray].map((_, i) => a.slice(n * i, n + n * i));
 }
 
 /**
@@ -209,7 +208,7 @@ class PrecacheController {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
 
-      const batches = splitIntoBatches(
+      const batches = splitIntoBatches<[string, string]>(
         Object.entries(this._urlsToCacheKeys),
         10,
       );
