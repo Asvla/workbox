@@ -39,7 +39,7 @@ interface PrecacheControllerOptions {
 }
 
 function splitIntoBatches<T>(a: T[], n: number): T[][] {
-  const indexArray: number[] = Array(Math.ceil(a.length / n));
+  const indexArray = Array<number>(Math.ceil(a.length / n));
   return [...indexArray].map((_, i) => a.slice(n * i, n + n * i));
 }
 
