@@ -243,9 +243,22 @@ export async function getManifestEntriesFromCompilation(
     compilation.warnings.push(new Error(warning) as WebpackError);
   }
 
-  function isHighPriority(url: string): boolean {
+  const highPriorityChunkAssets = config.highPriorityChunks?.flatMap(
+    (chunkName) => getNamesOfAssetsInChunkOrGroup(compilation, chunkName) ?? [],
+  );
+
+  function isHighPriorityChunk(url: string): boolean {
+    if (!highPriorityChunkAssets) return false;
+    return highPriorityChunkAssets.includes(url);
+  }
+
+  function isHighPriorityAsset(url: string): boolean {
     if (!config.highPriorityAssets) return false;
     return ModuleFilenameHelpers.matchPart(url, config.highPriorityAssets);
+  }
+
+  function isHighPriority(url: string): boolean {
+    return isHighPriorityChunk(url) || isHighPriorityAsset(url);
   }
 
   function isLowPriority(url: string): boolean {
