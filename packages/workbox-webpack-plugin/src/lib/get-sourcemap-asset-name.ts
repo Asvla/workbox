@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {getSourceMapURL} from 'workbox-build/build/lib/get-source-map-url';
+import {getSourceMapURL} from '@asvla/workbox-build/build/lib/get-source-map-url';
 import upath from 'upath';
 import type {Compilation} from 'webpack';
 

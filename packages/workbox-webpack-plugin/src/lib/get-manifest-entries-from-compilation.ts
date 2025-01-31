@@ -13,14 +13,14 @@ import {
   ModuleFilenameHelpers,
   WebpackError,
 } from 'webpack';
-import {transformManifest} from 'workbox-build/build/lib/transform-manifest';
+import {transformManifest} from '@asvla/workbox-build/build/lib/transform-manifest';
 
 import {
   WebpackGenerateSWOptions,
   WebpackInjectManifestOptions,
   ManifestEntry,
   FileDetails,
-} from 'workbox-build';
+} from '@asvla/workbox-build';
 import {getAssetHash} from './get-asset-hash';
 import {resolveWebpackURL} from './resolve-webpack-url';
 
