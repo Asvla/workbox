@@ -1,5 +1,5 @@
 {
-  "name": "workbox-precaching",
+  "name": "@asvla/workbox-precaching",
   "version": "7.3.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team and Google's Aurora Team",
