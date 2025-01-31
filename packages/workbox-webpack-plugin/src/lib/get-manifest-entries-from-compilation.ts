@@ -243,13 +243,16 @@ export async function getManifestEntriesFromCompilation(
     compilation.warnings.push(new Error(warning) as WebpackError);
   }
 
-  const highPriorityChunkAssets = config.highPriorityChunks?.flatMap(
-    (chunkName) => getNamesOfAssetsInChunkOrGroup(compilation, chunkName) ?? [],
+  const highPriorityChunkAssets = new Set(
+    config.highPriorityChunks?.flatMap(
+      (chunkName) =>
+        getNamesOfAssetsInChunkOrGroup(compilation, chunkName) ?? [],
+    ),
   );
 
   function isHighPriorityChunk(url: string): boolean {
     if (!highPriorityChunkAssets) return false;
-    return highPriorityChunkAssets.includes(url);
+    return highPriorityChunkAssets.has(url);
   }
 
   function isHighPriorityAsset(url: string): boolean {
