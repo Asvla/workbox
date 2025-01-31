@@ -244,24 +244,16 @@ export async function getManifestEntriesFromCompilation(
   }
 
   const highPriorityChunkAssets = new Set(
-    config.highPriorityChunks?.flatMap(
-      (chunkName) =>
-        getNamesOfAssetsInChunkOrGroup(compilation, chunkName) ?? [],
+    config.highPriorityChunks?.flatMap((chunkName) =>
+      (getNamesOfAssetsInChunkOrGroup(compilation, chunkName) ?? [])
+        .filter((assetUrl) => assetUrl.endsWith('.js'))
+        .map((assetUrl) => '/_next/' + assetUrl),
     ),
   );
-
-  function isHighPriorityChunk(url: string): boolean {
-    if (!highPriorityChunkAssets) return false;
-    return highPriorityChunkAssets.has(url);
-  }
 
   function isHighPriorityAsset(url: string): boolean {
     if (!config.highPriorityAssets) return false;
     return ModuleFilenameHelpers.matchPart(url, config.highPriorityAssets);
-  }
-
-  function isHighPriority(url: string): boolean {
-    return isHighPriorityChunk(url) || isHighPriorityAsset(url);
   }
 
   function isLowPriority(url: string): boolean {
@@ -270,13 +262,21 @@ export async function getManifestEntriesFromCompilation(
   }
 
   // Ensure that the entries are properly sorted by URL.
-  const sortedEntries = manifestEntries.sort((a, b) => {
-    if (isLowPriority(a.url) && !isLowPriority(b.url)) return 1;
-    if (!isLowPriority(a.url) && isLowPriority(b.url)) return -1;
-    if (isHighPriority(a.url) && !isHighPriority(b.url)) return -1;
-    if (!isHighPriority(a.url) && isHighPriority(b.url)) return 1;
-    return a.url === b.url ? 0 : a.url > b.url ? 1 : -1;
-  });
+  const regularEntries = manifestEntries
+    .filter((asset) => !highPriorityChunkAssets.has(asset.url))
+    .sort((a, b) => {
+      if (isLowPriority(a.url) && !isLowPriority(b.url)) return 1;
+      if (!isLowPriority(a.url) && isLowPriority(b.url)) return -1;
+      if (isHighPriorityAsset(a.url) && !isHighPriorityAsset(b.url)) return -1;
+      if (!isHighPriorityAsset(a.url) && isHighPriorityAsset(b.url)) return 1;
+      return a.url === b.url ? 0 : a.url > b.url ? 1 : -1;
+    });
+
+  const highPriorityChunkEntries: ManifestEntry[] = [...highPriorityChunkAssets]
+    .map((assetUrl) => manifestEntries.find((entry) => entry.url === assetUrl))
+    .filter((item): item is ManifestEntry => Boolean(item));
+
+  const sortedEntries = [...highPriorityChunkEntries, ...regularEntries];
 
   return {size, sortedEntries};
 }
