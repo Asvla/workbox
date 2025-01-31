@@ -45,9 +45,9 @@ self.addEventListener('message', (event) => {
  * requests for URLs in the manifest.
  * See https://goo.gl/S9QRab
  */
-<%= use('workbox-precaching', 'precacheAndRoute') %>(<%= JSON.stringify(manifestEntries, null, 2) %>, <%= precacheOptionsString %>);
-<% if (cleanupOutdatedCaches) { %><%= use('workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
-<% if (navigateFallback) { %><%= use('workbox-routing', 'registerRoute') %>(new <%= use('workbox-routing', 'NavigationRoute') %>(<%= use('workbox-precaching', 'createHandlerBoundToURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackAllowlist || navigateFallbackDenylist) { %>, {
+<%= use('@asvla/workbox-precaching', 'precacheAndRoute') %>(<%= JSON.stringify(manifestEntries, null, 2) %>, <%= precacheOptionsString %>);
+<% if (cleanupOutdatedCaches) { %><%= use('@asvla/workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
+<% if (navigateFallback) { %><%= use('workbox-routing', 'registerRoute') %>(new <%= use('workbox-routing', 'NavigationRoute') %>(<%= use('@asvla/workbox-precaching', 'createHandlerBoundToURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackAllowlist || navigateFallbackDenylist) { %>, {
   <% if (navigateFallbackAllowlist) { %>allowlist: [<%= navigateFallbackAllowlist %>],<% } %>
   <% if (navigateFallbackDenylist) { %>denylist: [<%= navigateFallbackDenylist %>],<% } %>
 }<% } %>));<% } %>

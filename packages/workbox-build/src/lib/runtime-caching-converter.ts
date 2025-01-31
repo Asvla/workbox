@@ -119,7 +119,7 @@ function getOptionsString(
 
       case 'precacheFallback': {
         const plugin = moduleRegistry.use(
-          'workbox-precaching',
+          '@asvla/workbox-precaching',
           'PrecacheFallbackPlugin',
         );
 
