@@ -1,6 +1,6 @@
 {
   "name": "@asvla/workbox-build",
-  "version": "7.3.5",
+  "version": "7.3.6",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -52,7 +52,7 @@
     "workbox-expiration": "7.3.0",
     "workbox-google-analytics": "7.3.0",
     "workbox-navigation-preload": "7.3.0",
-    "@asvla/workbox-precaching": "^7.3.0",
+    "@asvla/workbox-precaching": "^7.3.2",
     "workbox-range-requests": "7.3.0",
     "workbox-recipes": "7.3.0",
     "workbox-routing": "7.3.0",
