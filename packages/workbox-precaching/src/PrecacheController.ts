@@ -208,10 +208,7 @@ class PrecacheController {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
 
-      const batches = splitIntoBatches<[string, string]>(
-        Object.entries(this._urlsToCacheKeys),
-        10,
-      );
+      const batches = splitIntoBatches([...this._urlsToCacheKeys], 10);
 
       for (const batch of batches) {
         const promises = batch.flatMap(([url, cacheKey]) => {
