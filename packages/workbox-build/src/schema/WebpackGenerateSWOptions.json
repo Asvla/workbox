@@ -70,7 +70,7 @@
       ]
     },
     "highPriorityAssets": {
-      "description": "One or more specifiers for assets to be precached before all others.",
+      "description": "One or more regexes for assets to be precached before all others.",
       "type": "array",
       "items": {
         "anyOf": [
@@ -83,8 +83,15 @@
         ]
       }
     },
+    "highPriorityChunks": {
+      "description": "One or more names of chunks to be precached before all others.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "lowPriorityAssets": {
-      "description": "One or more specifiers for assets to be precached after all others.",
+      "description": "One or more regexes for assets to be precached after all others.",
       "type": "array",
       "items": {
         "anyOf": [

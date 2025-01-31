@@ -480,11 +480,15 @@ export interface WebpackPartial {
    */
   mode?: string | null;
   /**
-   * One or more specifiers for assets to be precached before all others.
+   * One or more regexes for assets to be precached before all others.
    */
   highPriorityAssets?: Array<string | RegExp>;
   /**
-   * One or more specifiers for assets to be precached after all others.
+   * One or more names of chunks to be precached before all others.
+   */
+  highPriorityChunks?: Array<string>;
+  /**
+   * One or more regexes for assets to be precached after all others.
    */
   lowPriorityAssets?: Array<string | RegExp>;
 }
