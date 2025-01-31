@@ -255,10 +255,10 @@ export async function getManifestEntriesFromCompilation(
 
   // Ensure that the entries are properly sorted by URL.
   const sortedEntries = manifestEntries.sort((a, b) => {
-    if (isLowPriority(a.url) && !isLowPriority(b.url)) return -1;
-    if (!isLowPriority(a.url) && isLowPriority(b.url)) return 1;
-    if (isHighPriority(a.url) && !isHighPriority(b.url)) return 1;
-    if (!isHighPriority(a.url) && isHighPriority(b.url)) return -1;
+    if (isLowPriority(a.url) && !isLowPriority(b.url)) return 1;
+    if (!isLowPriority(a.url) && isLowPriority(b.url)) return -1;
+    if (isHighPriority(a.url) && !isHighPriority(b.url)) return -1;
+    if (!isHighPriority(a.url) && isHighPriority(b.url)) return 1;
     return a.url === b.url ? 0 : a.url > b.url ? 1 : -1;
   });
 
