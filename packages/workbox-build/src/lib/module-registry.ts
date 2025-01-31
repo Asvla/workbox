@@ -55,7 +55,9 @@ export class ModuleRegistry {
    * @private
    */
   getLocalName(pkg: string, moduleName: string): string {
-    return `${pkg.replace(/-/g, '_').replace('@asvla', '')}_${moduleName}`;
+    const pkgSegments = pkg.split('/');
+    const lastPkgSegment = pkgSegments[pkgSegments.length - 1];
+    return `${lastPkgSegment.replace(/-/g, '_')}_${moduleName}`;
   }
 
   /**

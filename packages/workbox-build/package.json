@@ -1,6 +1,6 @@
 {
   "name": "@asvla/workbox-build",
-  "version": "7.3.3",
+  "version": "7.3.4",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
