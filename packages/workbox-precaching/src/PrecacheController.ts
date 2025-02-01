@@ -38,11 +38,6 @@ interface PrecacheControllerOptions {
   fallbackToNetwork?: boolean;
 }
 
-function splitIntoBatches<T>(a: T[], n: number): T[][] {
-  const indexArray = Array<number>(Math.ceil(a.length / n));
-  return [...indexArray].map((_, i) => a.slice(n * i, n + n * i));
-}
-
 /**
  * Performs efficient precaching of assets.
  *
@@ -191,7 +186,10 @@ class PrecacheController {
     }
   }
 
-  private makeRequest(event: ExtendableEvent, url: string, cacheKey: string) {
+  private makeRequest(
+    event: ExtendableEvent,
+    [url, cacheKey]: [string, string],
+  ) {
     const integrity = this._cacheKeysToIntegrities.get(cacheKey);
     const cacheMode = this._urlsToCacheModes.get(url);
 
@@ -225,14 +223,19 @@ class PrecacheController {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
 
-      const batches = splitIntoBatches([...this._urlsToCacheKeys], 10);
+      const entries = [...this._urlsToCacheKeys]; // 89
 
-      for (const batch of batches) {
-        const promises = batch.flatMap(([url, cacheKey]) => {
-          return this.makeRequest(event, url, cacheKey);
-        });
+      let promises: Promise<Response>[] = []; // [A, A, A, R, A, A, A, A, A, A, A]
+      let requestsInFlight = 0; // 10
 
-        await Promise.all(promises);
+      while (entries.length) {
+        while (requestsInFlight < 10) {
+          const entry = entries.shift()!;
+          promises.push(this.makeRequest(event, entry)[0]);
+          requestsInFlight += 1;
+        }
+        await Promise.race(promises).catch();
+        requestsInFlight -= 1;
       }
 
       const {updatedURLs, notUpdatedURLs} = installReportPlugin;
