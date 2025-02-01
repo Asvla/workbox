@@ -225,7 +225,7 @@ class PrecacheController {
 
       const entries = [...this._urlsToCacheKeys]; // 89
 
-      let promises: Promise<Response>[] = []; // [A, A, A, R, A, A, A, A, A, A, A]
+      const promises: Promise<Response>[] = []; // [A, A, A, R, A, A, A, A, A, A, A]
       let requestsInFlight = 0; // 10
 
       while (entries.length) {
