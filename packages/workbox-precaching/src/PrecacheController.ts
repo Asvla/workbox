@@ -191,6 +191,23 @@ class PrecacheController {
     }
   }
 
+  private makeRequest(event: ExtendableEvent, url: string, cacheKey: string) {
+    const integrity = this._cacheKeysToIntegrities.get(cacheKey);
+    const cacheMode = this._urlsToCacheModes.get(url);
+
+    const request = new Request(url, {
+      integrity,
+      cache: cacheMode,
+      credentials: 'same-origin',
+    });
+
+    return this.strategy.handleAll({
+      params: {cacheKey},
+      request,
+      event,
+    });
+  }
+
   /**
    * Precaches new and updated assets. Call this method from the service worker
    * install event.
@@ -212,20 +229,7 @@ class PrecacheController {
 
       for (const batch of batches) {
         const promises = batch.flatMap(([url, cacheKey]) => {
-          const integrity = this._cacheKeysToIntegrities.get(cacheKey);
-          const cacheMode = this._urlsToCacheModes.get(url);
-
-          const request = new Request(url, {
-            integrity,
-            cache: cacheMode,
-            credentials: 'same-origin',
-          });
-
-          return this.strategy.handleAll({
-            params: {cacheKey},
-            request,
-            event,
-          });
+          return this.makeRequest(event, url, cacheKey);
         });
 
         await Promise.all(promises);
