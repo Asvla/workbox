@@ -246,8 +246,11 @@ export async function getManifestEntriesFromCompilation(
   const highPriorityChunkAssets = new Set(
     config.highPriorityChunks?.flatMap((chunkName) =>
       (getNamesOfAssetsInChunkOrGroup(compilation, chunkName) ?? [])
-        .filter((assetUrl) => assetUrl.endsWith('.js'))
-        .map((assetUrl) => '/_next/' + assetUrl),
+        .filter((assetPath) => assetPath.endsWith('.js'))
+        .map(
+          (assetPath) =>
+            '/_next/' + assetPath.replace('[', '%5B').replace(']', '%5D'),
+        ),
     ),
   );
 
