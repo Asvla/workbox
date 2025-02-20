@@ -24,6 +24,11 @@ import {
 import {getAssetHash} from './get-asset-hash';
 import {resolveWebpackURL} from './resolve-webpack-url';
 
+function pushWarning(compilation: Compilation, text: string) {
+  if (process.env.NODE_ENV !== 'production') return;
+  compilation.warnings.push(new Error(text) as WebpackError);
+}
+
 /**
  * For a given asset, checks whether at least one of the conditions matches.
  *
@@ -170,7 +175,12 @@ function filterAssets(
         for (const assetName of assetsInChunkOrGroup) {
           deniedAssetNames.add(assetName);
         }
-      } // Don't warn if the chunk group isn't found.
+      } else {
+        pushWarning(
+          compilation,
+          `excludeChunks: no matching chunks for ${name}`,
+        );
+      }
     }
   }
 
@@ -244,14 +254,24 @@ export async function getManifestEntriesFromCompilation(
   }
 
   const highPriorityChunkAssets = new Set(
-    config.highPriorityChunks?.flatMap((chunkName) =>
-      (getNamesOfAssetsInChunkOrGroup(compilation, chunkName) ?? [])
+    config.highPriorityChunks?.flatMap((chunkName) => {
+      const assets = getNamesOfAssetsInChunkOrGroup(compilation, chunkName);
+
+      if (!assets) {
+        pushWarning(
+          compilation,
+          `highPriorityChunks: no matching chunks for ${chunkName}`,
+        );
+        return [];
+      }
+
+      return assets
         .filter((assetPath) => assetPath.endsWith('.js'))
         .map(
           (assetPath) =>
             '/_next/' + assetPath.replace('[', '%5B').replace(']', '%5D'),
-        ),
-    ),
+        );
+    }),
   );
 
   function isHighPriorityAsset(url: string): boolean {
