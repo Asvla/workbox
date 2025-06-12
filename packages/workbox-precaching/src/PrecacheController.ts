@@ -223,19 +223,34 @@ class PrecacheController {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
 
-      const entries = [...this._urlsToCacheKeys]; // 89
+      const entries = [...this._urlsToCacheKeys];
+      const promiseEntries: Array<{
+        promise: Promise<Response>;
+        entry: [string, string];
+      }> = [];
+      let requestsInFlight = 0;
 
-      const promises: Promise<Response>[] = []; // [A, A, A, R, A, A, A, A, A, A, A]
-      let requestsInFlight = 0; // 10
-
-      while (entries.length) {
-        while (requestsInFlight < 10) {
+      while (entries.length > 0 || promiseEntries.length > 0) {
+        // Add new requests up to the limit
+        while (requestsInFlight < 10 && entries.length > 0) {
           const entry = entries.shift()!;
-          promises.push(this.makeRequest(event, entry)[0]);
-          requestsInFlight += 1;
+          const promise = this.makeRequest(event, entry)[0];
+          promiseEntries.push({promise, entry});
+          requestsInFlight++;
         }
-        await Promise.race(promises).catch();
-        requestsInFlight -= 1;
+
+        if (promiseEntries.length === 0) break;
+
+        // Wait for the next request to complete
+        const completedIndex = await Promise.race(
+          promiseEntries.map((entry, index) =>
+            entry.promise.then(() => index).catch(() => index),
+          ),
+        );
+
+        // Remove the completed promise and decrement counter
+        promiseEntries.splice(completedIndex, 1);
+        requestsInFlight--;
       }
 
       const {updatedURLs, notUpdatedURLs} = installReportPlugin;
